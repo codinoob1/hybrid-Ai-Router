@@ -23,10 +23,12 @@ export function createRouter(config: RouterConfig) {
     probe = await probeDevice();
     const model = pickModel(probe);
 
-    if (!model) return; // device can't run anything local — stay null, always cloud
-
-    const runtime = config.adapters[model.runtime];
-    if (!runtime) return;
+    const runtime = model && config.adapters[model.runtime];
+    if (!runtime) {
+      loadedRuntime = null;
+      loadedModelId = null;
+      return;
+    }
 
     await runtime.load(model.id);
     loadedRuntime = runtime;
