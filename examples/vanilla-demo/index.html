@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hybrid AI Router — Device Probe</title>
+  </head>
+  <body>
+    <main id="app">
+      <h1>Hybrid AI Router</h1>
+      <p>Local device capability probe</p>
+      <button id="run-probe" type="button">Run probe</button>
+      <output id="result" aria-live="polite">Ready.</output>
+    </main>
+    <script type="module">
+      if (window.location.protocol === "file:") {
+        document.querySelector("#app").innerHTML = `
+          <h1>Start the demo server first</h1>
+          <p>This TypeScript demo cannot run from a <code>file://</code> URL.</p>
+          <pre>pnpm dev:demo</pre>
+          <p>Then open the <code>http://localhost:5173</code> URL Vite prints.</p>
+        `;
+      } else {
+        import("/main.ts");
+      }
+      {/*Log all the data to Console*/}
+      console.log()
+    </script>
+  </body>
+</html>
