@@ -1,0 +1,129 @@
+:root {
+  color: #17202a;
+  background: #e9eef2;
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(255, 255, 255, 0.9), transparent 32rem),
+    linear-gradient(135deg, #e9eef2 0%, #d7e3e5 100%);
+}
+
+#app {
+  width: min(980px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 4rem 0;
+}
+
+.page-header {
+  max-width: 680px;
+  margin-bottom: 2rem;
+}
+
+.eyebrow,
+.card-label {
+  margin: 0 0 0.65rem;
+  color: #b3542f;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0.75rem;
+  font-family: Georgia, serif;
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+h2 {
+  margin-bottom: 0.5rem;
+  font-family: Georgia, serif;
+  font-size: 1.65rem;
+}
+
+.page-header > p:last-child,
+.demo-card > p:not(.card-label) {
+  color: #52616b;
+  line-height: 1.6;
+}
+
+.demo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.demo-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 1.5rem;
+  border: 1px solid rgba(23, 32, 42, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.74);
+  box-shadow: 0 1rem 2rem rgba(44, 62, 74, 0.08);
+}
+
+button {
+  align-self: flex-start;
+  margin: 0.75rem 0 1rem;
+  padding: 0.7rem 1rem;
+  border: 0;
+  border-radius: 5px;
+  color: #fff;
+  background: #1f6670;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+button:hover {
+  background: #174d55;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+output {
+  display: block;
+  min-height: 3.5rem;
+  overflow-x: auto;
+  padding: 0.85rem;
+  border-left: 3px solid #d4774c;
+  color: #34444d;
+  background: #f1f5f3;
+  font-family: Consolas, monospace;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px) {
+  #app {
+    padding: 2.5rem 0;
+  }
+
+  .demo-grid {
+    grid-template-columns: 1fr;
+  }
+}
