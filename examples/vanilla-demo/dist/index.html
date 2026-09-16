@@ -4,22 +4,41 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hybrid AI Router — Device Probe</title>
-    <script type="module" crossorigin src="/assets/index-D_xJEERa.js"></script>
+    <script type="module" crossorigin src="/assets/index-DIM0pbqv.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-DXWJR2mp.css">
   </head>
   <body>
     <main id="app">
-      <h1>Hybrid AI Router</h1>
-      <p>Local device capability probe</p>
-      <button id="run-probe" type="button">Run probe</button>
-      <output id="result" aria-live="polite">Ready.</output>
+      <header class="page-header">
+        <p class="eyebrow">Developer demo</p>
+        <h1>Hybrid AI Router</h1>
+        <p>Inspect device capabilities, then run a local-or-cloud routing check.</p>
+      </header>
+
+      <div class="demo-grid">
+        <section class="demo-card" aria-labelledby="probe-title">
+          <p class="card-label">01 / Capabilities</p>
+          <h2 id="probe-title">Device probe</h2>
+          <p>Check whether this browser is suited for local inference.</p>
+          <button id="run-probe" type="button">Run probe</button>
+          <output id="result" aria-live="polite">Ready.</output>
+        </section>
+
+        <section class="demo-card" aria-labelledby="orchestrator-title">
+          <p class="card-label">02 / Routing </p>
+          <h2 id="orchestrator-title">Orchestrator test</h2>
+          <p>Verify that the router can choose local generation or cloud fallback.</p>
+          <button id="run-test" type="button">Run test</button>
+          <output id="test-result" aria-live="polite">Ready.</output>
+        </section>
+        <section class="demo-card" aria-labelledby="orchestrator-title">
+          <p class="card-label">03 / Adaptor </p>
+          <h2 id="orchestrator-title">Adaptor</h2>
+          <p>View the logs of the router.</p>
+          <button id="run-Adaptor" type="button">Run logs</button>
+          <output id="logs-result-Apatpor" aria-live="polite">Ready.</output>
+        </section>
+      </div>
     </main>
-
-
-
-    <h1>Run Test for Orchestrator</h1>
-    <p>Run a test to see if the orchestrator is reachable and working.</p>
-    <button id="run-test" type="button">Run test</button>
-    <output id="test-result" aria-live="polite">Ready.</output>
-    
   </body>
 </html>
