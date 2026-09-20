@@ -1,6 +1,7 @@
 import { probeDevice } from "../../packages/core/src/index.ts";
 import { createRouter } from "../../packages/core/src/orchestrator.ts";
 import { WebLLMAdapter } from "../../packages/adapter-webllm/src/index.ts";
+import { HuggingFaceRuntime } from "../../packages/adapter-transformers/src/index.ts";
 
 const button = document.querySelector<HTMLButtonElement>("#run-probe");
 const output = document.querySelector<HTMLOutputElement>("#result");
@@ -8,6 +9,8 @@ const testButton = document.querySelector<HTMLButtonElement>("#run-test");
 const testOutput = document.querySelector<HTMLOutputElement>("#test-result");
 const AdaptorButton = document.querySelector<HTMLButtonElement>("#run-Adaptor");
 const AdaptorOutput = document.querySelector<HTMLOutputElement>("#logs-result-Apatpor");
+const llmAdaptorButton = document.querySelector<HTMLButtonElement>("#run-llm-Adaptor");
+const llmAdaptorOutput = document.querySelector<HTMLOutputElement>("#logs-result-llm-Apatpor");
 
 if (!button || !output) throw new Error("Probe demo elements are missing.");
 
@@ -68,5 +71,27 @@ AdaptorButton?.addEventListener("click", async () => {
     AdaptorOutput.textContent = `Adaptor logs failed: ${error instanceof Error ? error.message : String(error)}`;
   } finally {
     AdaptorButton.disabled = false;
+  }
+});
+
+llmAdaptorButton?.addEventListener("click", async () => {
+  if (!llmAdaptorOutput) return;
+
+  llmAdaptorButton.disabled = true;
+  llmAdaptorOutput.textContent = "Running LLM-Adaptor logs…";
+
+  try {
+    console.log("Running LLM-Adaptor logs…");
+    const runtime = new HuggingFaceRuntime();
+    await runtime.load("onnx-community/Qwen2.5-0.5B-Instruct", (pct, text) =>
+      console.log(`Download: ${Math.round(pct * 100)}% ${text}`),
+    );
+    const result = await runtime.generate("These is a test prompt to see if your wokring or not from locally");
+    console.log(result);
+    llmAdaptorOutput.textContent = JSON.stringify(result, null, 2);
+  } catch (error) {
+    llmAdaptorOutput.textContent = `LLM-Adaptor logs failed: ${error instanceof Error ? error.message : String(error)}`;
+  } finally {
+    llmAdaptorButton.disabled = false;
   }
 });
