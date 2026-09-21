@@ -88,7 +88,8 @@ llmAdaptorButton?.addEventListener("click", async () => {
     );
     const result = await runtime.generate("These is a test prompt to see if your wokring or not from locally");
     console.log(result);
-    llmAdaptorOutput.textContent = JSON.stringify(result, null, 2);
+    llmAdaptorOutput.textContent = result;
+
   } catch (error) {
     llmAdaptorOutput.textContent = `LLM-Adaptor logs failed: ${error instanceof Error ? error.message : String(error)}`;
   } finally {
