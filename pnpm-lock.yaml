@@ -27,6 +27,12 @@ importers:
         specifier: ^2.0.0
         version: 2.1.9(@types/node@22.20.3)(supports-color@7.2.0)
 
+  packages/adapter-Cloud:
+    dependencies:
+      '@hybrid-ai/core':
+        specifier: workspace:*
+        version: link:../core
+
   packages/adapter-transformers:
     dependencies:
       '@huggingface/transformers':

@@ -224,3 +224,21 @@ package.
 - License (MIT is the default assumption for an open-source JS package but
   not yet chosen).
 - PC and laptop Load bigger models ? 
+
+
+## changes in the file structher :- 
+
+├── adapter-cloud/
+│   ├── src/
+│   │   ├── index.ts          # createCloudAdapter() — public entry point, provider switch
+│   │   ├── types.ts          # CloudProviderConfig discriminated union
+│   │   └── providers/
+│   │       ├── openai.ts     # OpenAI-compatible fetch client (also used by 'custom')
+│   │       ├── anthropic.ts  # Anthropic Messages API client
+│   │       └── gemini.ts     # Gemini generateContent client
+│   ├── test/
+│   │   ├── openai.test.ts
+│   │   ├── anthropic.test.ts
+│   │   └── gemini.test.ts
+│   ├── package.json
+│   └── tsconfig.jsons
