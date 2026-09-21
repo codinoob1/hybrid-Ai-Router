@@ -2,6 +2,12 @@ import { probeDevice } from "../../packages/core/src/index.ts";
 import { createRouter } from "../../packages/core/src/orchestrator.ts";
 import { WebLLMAdapter } from "../../packages/adapter-webllm/src/index.ts";
 import { HuggingFaceRuntime } from "../../packages/adapter-transformers/src/index.ts";
+import { createCloudAdapter } from "../../packages/adapter-Cloud/src/index.ts";
+import type { CloudProviderConfig } from "../../packages/adapter-Cloud/src/types.ts";
+
+// FILL THESE IN before testing the fake-cloud card against real endpoints.
+const FAKE_CLOUD_KEY = "sk-test-placeholder"; // your api key
+const FAKE_CUSTOM_BASE_URL = "http://localhost:4000/v1"; // any OpenAI-compatible gateway
 
 const button = document.querySelector<HTMLButtonElement>("#run-probe");
 const output = document.querySelector<HTMLOutputElement>("#result");
@@ -11,6 +17,10 @@ const AdaptorButton = document.querySelector<HTMLButtonElement>("#run-Adaptor");
 const AdaptorOutput = document.querySelector<HTMLOutputElement>("#logs-result-Apatpor");
 const llmAdaptorButton = document.querySelector<HTMLButtonElement>("#run-llm-Adaptor");
 const llmAdaptorOutput = document.querySelector<HTMLOutputElement>("#logs-result-llm-Apatpor");
+const fakeCoudButton = document.querySelector<HTMLButtonElement>("#fake-button-cloud");
+const fakeCoudOutput = document.querySelector<HTMLOutputElement>("#logs-result-fake-cloud");
+
+
 
 if (!button || !output) throw new Error("Probe demo elements are missing.");
 
@@ -95,4 +105,40 @@ llmAdaptorButton?.addEventListener("click", async () => {
   } finally {
     llmAdaptorButton.disabled = false;
   }
+});
+
+
+fakeCoudButton?.addEventListener("click", async () => {
+  if (!fakeCoudOutput) return;
+
+  fakeCoudButton.disabled = true;
+  fakeCoudOutput.textContent = "Running fake-cloud calls for every provider…";
+
+  const providers: CloudProviderConfig[] = [
+    { provider: "openai", apiKey: FAKE_CLOUD_KEY, model: "gpt-4o-mini" },
+    { provider: "anthropic", apiKey: FAKE_CLOUD_KEY, model: "claude-3-5-haiku-latest" },
+    { provider: "gemini", apiKey: FAKE_CLOUD_KEY, model: "gemini-2.0-flash" },
+    { provider: "custom", apiKey: FAKE_CLOUD_KEY, model: "qwen2.5-0.5b", baseUrl: FAKE_CUSTOM_BASE_URL },
+  ];
+
+  const results: Array<{ provider: string; text?: string; error?: string }> = [];
+
+  for (const config of providers) {
+    try {
+      console.log(`Fake-cloud: calling ${config.provider}…`);
+      const adapter = createCloudAdapter(config);
+      const text = await adapter.generate("Fake cloud test prompt");
+      console.log(`[${config.provider}]`, text);
+      results.push({ provider: config.provider, text });
+    } catch (error) {
+      console.error(`[${config.provider}] failed`, error);
+      results.push({
+        provider: config.provider,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  fakeCoudOutput.textContent = JSON.stringify(results, null, 2);
+  fakeCoudButton.disabled = false;
 });

@@ -1,5 +1,7 @@
 import type { CloudProviderConfig } from "../types";
 
+
+//error in calling the API  and URL 
 type OpenAiConfig = Extract<CloudProviderConfig, { provider: "openai" | "custom" }>;
 
 const DEFAULT_BASE_URL = "https://api.openai.com/v1";
@@ -9,6 +11,7 @@ async function errorBody(res: Response): Promise<string> {
     const data = await res.json();
     return typeof data?.error?.message === "string" ? data.error.message : res.statusText;
   } catch {
+    console.error("Failed to parse OpenAI error response as JSON");
     return res.statusText;
   }
 }
