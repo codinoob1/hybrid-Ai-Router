@@ -22,6 +22,7 @@ export async function anthropicGenerate(prompt: string, config: AnthropicConfig)
       "Content-Type": "application/json",
       "x-api-key": config.apiKey,
       "anthropic-version": API_VERSION,
+      "anthropic-dangerous-direct-browser-access": "true",
     },
     body: JSON.stringify({
       model: config.model,
