@@ -19,7 +19,8 @@ var HuggingFaceRuntime = class {
       [{ role: "user", content: prompt }],
       { max_new_tokens: 256, do_sample: false }
     );
-    return output[0]?.generated_text?.at(-1)?.content ?? "";
+    const content = output[0]?.generated_text?.at(-1)?.content;
+    return typeof content === "string" ? content : content?.map((part) => "text" in part ? part.text : "").join("") ?? "";
   }
 };
 export {

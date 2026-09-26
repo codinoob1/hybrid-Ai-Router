@@ -1,7 +1,15 @@
 {
   "name": "@hybrid-ai/adapter-transformers",
   "version": "0.1.0",
-  "private": true,
+  "description": "Local AI runtime adapter backed by Transformers.js (WASM) for hybrid-ai-router.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codinoob1/hybrid-Ai-Router.git",
+    "directory": "packages/adapter-transformers"
+  },
+  "keywords": ["hybrid-ai", "transformers", "onnx", "llm", "wasm"],
+  "publishConfig": { "access": "public" },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

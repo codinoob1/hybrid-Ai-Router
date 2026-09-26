@@ -47,6 +47,13 @@ describe("WebLLMAdapter", () => {
     await expect(adapter.generate("hello")).rejects.toThrow("load()");
   });
 
+  it("rejects load with a meaningful error for an invalid model ID", async () => {
+    mockCreate.mockRejectedValue(new Error("Model not found: bad-model-xyz"));
+    const adapter = new WebLLMAdapter();
+
+    await expect(adapter.load("bad-model-xyz")).rejects.toThrow("Model not found: bad-model-xyz");
+  });
+
   it("returns the assistant content from the engine", async () => {
     const engine = fakeEngine();
     mockCreate.mockResolvedValue(engine);

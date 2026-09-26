@@ -1,7 +1,15 @@
 {
   "name": "@hybrid-ai/react",
   "version": "0.1.0",
-  "private": true,
+  "description": "React hook (useHybridAI) for hybrid-ai-router.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codinoob1/hybrid-Ai-Router.git",
+    "directory": "packages/react"
+  },
+  "keywords": ["hybrid-ai", "react", "hook", "llm"],
+  "publishConfig": { "access": "public" },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -11,7 +19,9 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts --clean",
     "test": "vitest run"
@@ -23,10 +33,13 @@
     "@hybrid-ai/core": "workspace:*"
   },
   "devDependencies": {
-    "react": "^19.0.0",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
     "@types/react": "^19.0.0",
-    "typescript": "^5.5.0",
+    "jsdom": "^30.1.1",
+    "react": "^19.0.0",
     "tsup": "^8.0.0",
+    "typescript": "^5.5.0",
     "vitest": "^2.0.0"
   }
 }

@@ -38,4 +38,21 @@ describe("model registry", () => {
   it("returns cloud fallback when downloads are disallowed", () => {
     expect(pickModel({ ...standardProbe, connection: { ...standardProbe.connection, saveData: true } })).toBeNull();
   });
+
+  it("returns null when the device fails every model's minTier", () => {
+    const noneProbe = { ...standardProbe, tier: "none" as const, webgpu: { ...standardProbe.webgpu, available: false } };
+    expect(pickModel(noneProbe)).toBeNull();
+  });
+
+  it("picks the largest eligible model by downloadSizeMB, not just the first match", () => {
+    const picked = pickModel(standardProbe);
+    const largest = REGISTRY.filter((model) => canRun(standardProbe, model)).reduce<number>(
+      (max, model) => Math.max(max, model.downloadSizeMB),
+      0,
+    );
+    expect(picked).not.toBeNull();
+    expect(REGISTRY[0].id).toBe("qwen2.5-0.5b-q4f16");
+    expect(picked!.id).toBe("phi3-mini-q4f16");
+    expect(picked!.downloadSizeMB).toBe(largest);
+  });
 });

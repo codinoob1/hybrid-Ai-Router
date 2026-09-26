@@ -1,7 +1,15 @@
 {
   "name": "@hybrid-ai/adapter-webllm",
   "version": "0.1.0",
-  "private": true,
+  "description": "Local AI runtime adapter backed by WebLLM (WebGPU) for hybrid-ai-router.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codinoob1/hybrid-Ai-Router.git",
+    "directory": "packages/adapter-webllm"
+  },
+  "keywords": ["hybrid-ai", "webgpu", "web-llm", "llm", "mlc"],
+  "publishConfig": { "access": "public" },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
