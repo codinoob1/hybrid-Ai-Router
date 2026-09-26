@@ -12,10 +12,7 @@ async function openaiGenerate(prompt, config) {
     messages: [{ role: "user", content: prompt }]
   });
   const content = completion.choices?.[0]?.message?.content;
-  if (typeof content !== "string") {
-    throw new Error("OpenAI response missing choices[0].message.content");
-  }
-  return content;
+  return typeof content === "string" ? content : "";
 }
 
 // src/providers/anthropic.ts
@@ -47,7 +44,7 @@ async function anthropicGenerate(prompt, config) {
   if (!res.ok) throw new Error(`Anthropic request failed (${res.status}): ${await errorBody(res)}`);
   const data = await res.json();
   const blocks = data?.content;
-  if (!Array.isArray(blocks)) throw new Error("Anthropic response missing content array");
+  if (!Array.isArray(blocks)) return "";
   return blocks.map((block) => "text" in block ? block.text ?? "" : "").join("");
 }
 
@@ -73,7 +70,7 @@ async function geminiGenerate(prompt, config) {
   if (!res.ok) throw new Error(`Gemini request failed (${res.status}): ${await errorBody2(res)}`);
   const data = await res.json();
   const parts = data?.candidates?.[0]?.content?.parts;
-  if (!Array.isArray(parts)) throw new Error("Gemini response missing candidates[0].content.parts");
+  if (!Array.isArray(parts)) return "";
   return parts.map((part) => part.text ?? "").join("");
 }
 

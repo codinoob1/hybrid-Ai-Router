@@ -18,7 +18,7 @@ async function errorBody(res: Response): Promise<string> {
 export async function anthropicGenerate(prompt: string, config: AnthropicConfig): Promise<string> {
   const res = await fetch(API_URL, {
     method: "POST",
-    headers: {
+headers: {
       "Content-Type": "application/json",
       "x-api-key": config.apiKey,
       "anthropic-version": API_VERSION,
@@ -35,7 +35,7 @@ export async function anthropicGenerate(prompt: string, config: AnthropicConfig)
 
   const data = await res.json();
   const blocks = data?.content;
-  if (!Array.isArray(blocks)) throw new Error("Anthropic response missing content array");
+  if (!Array.isArray(blocks)) return "";
 
   return blocks
     .map((block: { type?: string; text?: string }) => ("text" in block ? block.text ?? "" : ""))

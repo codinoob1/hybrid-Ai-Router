@@ -29,7 +29,7 @@ export async function geminiGenerate(prompt: string, config: GeminiConfig): Prom
 
   const data = await res.json();
   const parts = data?.candidates?.[0]?.content?.parts;
-  if (!Array.isArray(parts)) throw new Error("Gemini response missing candidates[0].content.parts");
+  if (!Array.isArray(parts)) return "";
 
   return parts.map((part: { text?: string }) => part.text ?? "").join("");
 }

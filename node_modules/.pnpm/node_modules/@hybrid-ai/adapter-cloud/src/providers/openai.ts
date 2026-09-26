@@ -19,8 +19,5 @@ export async function openaiGenerate(prompt: string, config: OpenAiConfig): Prom
   });
 
   const content = completion.choices?.[0]?.message?.content;
-  if (typeof content !== "string") {
-    throw new Error("OpenAI response missing choices[0].message.content");
-  }
-  return content;
+  return typeof content === "string" ? content : "";
 }

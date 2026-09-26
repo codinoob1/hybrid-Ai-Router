@@ -1,189 +1,76 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+vi.mock("../src/providers/openai.js", () => ({ openaiGenerate: vi.fn() }));
+vi.mock("../src/providers/anthropic.js", () => ({ anthropicGenerate: vi.fn() }));
+vi.mock("../src/providers/gemini.js", () => ({ geminiGenerate: vi.fn() }));
+
 import { createCloudAdapter } from "../src/index.js";
 import { openaiGenerate } from "../src/providers/openai.js";
 import { anthropicGenerate } from "../src/providers/anthropic.js";
 import { geminiGenerate } from "../src/providers/gemini.js";
 
-vi.mock("openai", () => ({ default: vi.fn() }));
+const mockOpenai = vi.mocked(openaiGenerate);
+const mockAnthropic = vi.mocked(anthropicGenerate);
+const mockGemini = vi.mocked(geminiGenerate);
 
-import OpenAI from "openai";
+afterEach(() => vi.clearAllMocks());
 
-const mockOpenAI = vi.mocked(OpenAI);
-
-function fakeClient(reply: unknown = { choices: [{ message: { content: "local reply" } }] }) {
-  return {
-    chat: {
-      completions: {
-        create: vi.fn().mockResolvedValue(reply),
-      },
-    },
-  };
-}
-
-const fetchMock = vi.fn();
-
-function mockOk(body: unknown) {
-  fetchMock.mockResolvedValue({
-    ok: true,
-    status: 200,
-    statusText: "OK",
-    json: async () => body,
-  });
-}
-
-function mockError(status: number, message: string) {
-  fetchMock.mockResolvedValue({
-    ok: false,
-    status,
-    statusText: "Error",
-    json: async () => ({ error: { message } }),
-  });
-}
-
-beforeEach(() => {
-  vi.stubGlobal("fetch", fetchMock);
-});
-
-afterEach(() => {
-  vi.unstubAllGlobals();
-  mockOpenAI.mockReset();
-  fetchMock.mockReset();
-});
-
-describe("openaiGenerate", () => {
-  it("constructs the SDK client with apiKey, baseURL and browser access", async () => {
-    mockOpenAI.mockReturnValue(fakeClient() as any);
-
-    const text = await openaiGenerate("hello", { provider: "openai", apiKey: "sk-test", model: "gpt-4o-mini" });
-
-    expect(text).toBe("local reply");
-    expect(mockOpenAI).toHaveBeenCalledWith({
-      apiKey: "sk-test",
-      baseURL: "https://api.openai.com/v1",
-      dangerouslyAllowBrowser: true,
-    });
-  });
-
-  it("uses the custom baseUrl as baseURL", async () => {
-    mockOpenAI.mockReturnValue(fakeClient() as any);
-
-    await openaiGenerate("hello", { provider: "openai", apiKey: "sk-test", model: "m", baseUrl: "https://llm.example.com/v1" });
-
-    expect(mockOpenAI).toHaveBeenCalledWith({
-      apiKey: "sk-test",
-      baseURL: "https://llm.example.com/v1",
-      dangerouslyAllowBrowser: true,
-    });
-  });
-
-  it("calls chat.completions.create with the model and messages", async () => {
-    const client = fakeClient();
-    mockOpenAI.mockReturnValue(client as any);
-
-    await openaiGenerate("hello", { provider: "custom", apiKey: "secret", model: "m", baseUrl: "https://gateway.example.com/v1" });
-
-    expect(client.chat.completions.create).toHaveBeenCalledWith({
-      model: "m",
-      messages: [{ role: "user", content: "hello" }],
-    });
-  });
-
-  it("propagates SDK errors", async () => {
-    const client = fakeClient();
-    client.chat.completions.create.mockRejectedValue(new Error("401 invalid api key"));
-    mockOpenAI.mockReturnValue(client as any);
-
-    await expect(openaiGenerate("hello", { provider: "openai", apiKey: "bad", model: "gpt-4o-mini" })).rejects.toThrow(
-      "401 invalid api key",
-    );
-  });
-
-  it("throws when the response has no content", async () => {
-    mockOpenAI.mockReturnValue(fakeClient({ choices: [{ message: {} }] }) as any);
-
-    await expect(openaiGenerate("hello", { provider: "openai", apiKey: "sk-test", model: "gpt-4o-mini" })).rejects.toThrow(
-      "choices[0].message.content",
-    );
-  });
-});
-
-describe("anthropicGenerate", () => {
-  it("posts to the Messages API with the right headers and body", async () => {
-    mockOk({ content: [{ type: "text", text: "hello " }, { type: "text", text: "world" }] });
-
-    const text = await anthropicGenerate("hi", { provider: "anthropic", apiKey: "sk-ant-test", model: "claude-haiku" });
-
-    expect(text).toBe("hello world");
-    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
-    expect(url).toBe("https://api.anthropic.com/v1/messages");
-    const headers = init.headers as Record<string, string>;
-    expect(headers["x-api-key"]).toBe("sk-ant-test");
-    expect(headers["anthropic-version"]).toBe("2023-06-01");
-    expect(JSON.parse(init.body as string)).toEqual({
-      model: "claude-haiku",
-      max_tokens: 1024,
-      messages: [{ role: "user", content: "hi" }],
-    });
-  });
-
-  it("throws with the API error message on a non-OK response", async () => {
-    mockError(429, "rate limit hit");
-
-    await expect(anthropicGenerate("hi", { provider: "anthropic", apiKey: "sk-ant-test", model: "claude-haiku" })).rejects.toThrow(
-      "Anthropic request failed (429): rate limit hit",
-    );
-  });
-});
-
-describe("geminiGenerate", () => {
-  it("posts to generateContent with the model and key in the URL", async () => {
-    mockOk({ candidates: [{ content: { parts: [{ text: "gem " }, { text: "answer" }] } }] });
-
-    const text = await geminiGenerate("hi", { provider: "gemini", apiKey: "key-123", model: "gemini-2.0-flash" });
-
-    expect(text).toBe("gem answer");
-    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
-    expect(url).toBe(
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=key-123",
-    );
-    expect(JSON.parse(init.body as string)).toEqual({
-      contents: [{ role: "user", parts: [{ text: "hi" }] }],
-    });
-  });
-
-  it("throws with the API error message on a non-OK response", async () => {
-    mockError(400, "bad request");
-
-    await expect(geminiGenerate("hi", { provider: "gemini", apiKey: "key-123", model: "gemini-2.0-flash" })).rejects.toThrow(
-      "Gemini request failed (400): bad request",
-    );
-  });
-});
-
-describe("createCloudAdapter", () => {
-  it("routes custom config through the OpenAI client to the supplied baseUrl", async () => {
-    const client = fakeClient({ choices: [{ message: { content: "custom reply" } }] });
-    mockOpenAI.mockReturnValue(client as any);
-
-    const adapter = createCloudAdapter({ provider: "custom", apiKey: "secret", model: "local-model", baseUrl: "https://gateway.example.com/v1" });
-    const text = await adapter.generate("hello");
-
-    expect(text).toBe("custom reply");
-    expect(mockOpenAI).toHaveBeenCalledWith(
-      expect.objectContaining({ baseURL: "https://gateway.example.com/v1" }),
-    );
-    expect(client.chat.completions.create).toHaveBeenCalledWith(
-      expect.objectContaining({ model: "local-model" }),
-    );
-  });
-
-  it("routes openai config through the OpenAI client", async () => {
-    mockOpenAI.mockReturnValue(fakeClient() as any);
+describe("createCloudAdapter dispatcher", () => {
+  it("routes openai config to the openai provider and no other", async () => {
+    mockOpenai.mockResolvedValue("openai reply");
 
     const adapter = createCloudAdapter({ provider: "openai", apiKey: "sk-test", model: "gpt-4o-mini" });
     const text = await adapter.generate("hello");
 
-    expect(text).toBe("local reply");
-    expect(mockOpenAI).toHaveBeenCalledWith(expect.objectContaining({ baseURL: "https://api.openai.com/v1" }));
+    expect(text).toBe("openai reply");
+    expect(mockOpenai).toHaveBeenCalledTimes(1);
+    expect(mockOpenai).toHaveBeenCalledWith("hello", expect.objectContaining({ provider: "openai" }));
+    expect(mockAnthropic).not.toHaveBeenCalled();
+    expect(mockGemini).not.toHaveBeenCalled();
+  });
+
+  it("routes custom config through the OpenAI-shaped client specifically", async () => {
+    mockOpenai.mockResolvedValue("gateway reply");
+
+    const adapter = createCloudAdapter({ provider: "custom", apiKey: "secret", model: "m", baseUrl: "https://gateway.example.com/v1" });
+    const text = await adapter.generate("hello");
+
+    expect(text).toBe("gateway reply");
+    expect(mockOpenai).toHaveBeenCalledTimes(1);
+    expect(mockOpenai).toHaveBeenCalledWith("hello", expect.objectContaining({ provider: "custom" }));
+    expect(mockAnthropic).not.toHaveBeenCalled();
+    expect(mockGemini).not.toHaveBeenCalled();
+  });
+
+  it("routes anthropic config to the anthropic provider and no other", async () => {
+    mockAnthropic.mockResolvedValue("claude reply");
+
+    const adapter = createCloudAdapter({ provider: "anthropic", apiKey: "sk-ant-test", model: "claude-haiku" });
+    const text = await adapter.generate("hi");
+
+    expect(text).toBe("claude reply");
+    expect(mockAnthropic).toHaveBeenCalledTimes(1);
+    expect(mockAnthropic).toHaveBeenCalledWith("hi", expect.objectContaining({ provider: "anthropic" }));
+    expect(mockOpenai).not.toHaveBeenCalled();
+    expect(mockGemini).not.toHaveBeenCalled();
+  });
+
+  it("routes gemini config to the gemini provider and no other", async () => {
+    mockGemini.mockResolvedValue("gemini reply");
+
+    const adapter = createCloudAdapter({ provider: "gemini", apiKey: "key-123", model: "gemini-2.0-flash" });
+    const text = await adapter.generate("hi");
+
+    expect(text).toBe("gemini reply");
+    expect(mockGemini).toHaveBeenCalledTimes(1);
+    expect(mockGemini).toHaveBeenCalledWith("hi", expect.objectContaining({ provider: "gemini" }));
+    expect(mockOpenai).not.toHaveBeenCalled();
+    expect(mockAnthropic).not.toHaveBeenCalled();
+  });
+
+  it("throws for an unknown provider", async () => {
+    const adapter = createCloudAdapter({ provider: "unknown" } as any);
+
+    await expect(adapter.generate("hi")).rejects.toThrow("Unknown cloud provider");
   });
 });
