@@ -1,6 +1,6 @@
 {
   "name": "@hybrid-ai/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Core orchestrator, capability prober, model registry, and quality monitor for hybrid-ai-router.",
   "license": "MIT",
   "repository": {
