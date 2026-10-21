@@ -1,6 +1,6 @@
 {
     "name": "@hybrid-ai/adapter-cloud",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Cloud fallback adapter with OpenAI, Anthropic, and Gemini clients for hybrid-ai-router.",
     "license": "MIT",
     "repository": {

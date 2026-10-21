@@ -1,6 +1,6 @@
 {
   "name": "@hybrid-ai/adapter-webllm",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Local AI runtime adapter backed by WebLLM (WebGPU) for hybrid-ai-router.",
   "license": "MIT",
   "repository": {

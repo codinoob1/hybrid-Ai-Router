@@ -1,0 +1,42 @@
+{
+  "name": "@hybrid-ai/bench",
+  "version": "0.2.0",
+  "description": "Standalone device AI-benchmarking CLI for hybrid-ai-router. Measures local model load time, generation latency, throughput, and quality on the user's device, with optional cloud comparison.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codinoob1/hybrid-Ai-Router.git",
+    "directory": "packages/bench"
+  },
+  "keywords": ["hybrid-ai", "benchmark", "device", "local-llm", "webgpu", "wasm", "cli"],
+  "publishConfig": { "access": "public" },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "bin": {
+    "hybrid-ai-bench": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsup src/cli.ts --format esm --dts --clean",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@hybrid-ai/core": "workspace:*",
+    "@hybrid-ai/adapter-webllm": "workspace:*",
+    "@hybrid-ai/adapter-transformers": "workspace:*",
+    "@hybrid-ai/adapter-cloud": "workspace:*"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
+}
