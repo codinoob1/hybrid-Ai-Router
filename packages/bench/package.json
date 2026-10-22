@@ -24,7 +24,7 @@
     "hybrid-ai-bench": "./dist/cli.js"
   },
   "scripts": {
-    "build": "tsup src/cli.ts --format esm --dts --clean",
+    "build": "tsup --config tsup.config.ts",
     "test": "vitest run"
   },
   "dependencies": {
@@ -34,6 +34,7 @@
     "@hybrid-ai/adapter-cloud": "workspace:*"
   },
   "devDependencies": {
+    "@types/node": "^22.0.0",
     "playwright": "^1.48.0",
     "tsup": "^8.5.1",
     "typescript": "^5.5.0",
