@@ -1,7 +1,7 @@
 import { readFile } from "fs/promises";
-import promptsJson from "./defaults/prompts.json";
+import promptsJson from "../defaults/prompts.json";
 
-const DEFAULT_PROMPTS: readonly string[] = promptsJson.prompts;
+const DEFAULT_PROMPTS: readonly string[] = promptsJson;
 
 /**
  * Load prompts from CLI options. Priority:
