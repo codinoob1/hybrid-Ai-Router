@@ -1,12 +1,18 @@
 // src/prompts.ts
 import { readFile } from "fs/promises";
-var DEFAULT_PROMPTS = [
+
+// defaults/prompts.json
+var prompts_default = [
   "What is the capital of France?",
   "Explain how a VPN works in two sentences.",
   "Write a three-sentence story about a robot learning to paint.",
   "List three health benefits of walking daily.",
-  "Translate 'Hello, how are you?' into Spanish."
+  "Translate 'Hello, how are you?' into Spanish.",
+  "Hello, respoding with hello back"
 ];
+
+// src/prompts.ts
+var DEFAULT_PROMPTS = prompts_default;
 async function loadPrompts(options) {
   if (options.promptFile) {
     const content = await readFile(options.promptFile, "utf-8");

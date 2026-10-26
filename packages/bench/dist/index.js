@@ -4,7 +4,7 @@ import {
   renderBrowserHtml,
   renderJson,
   renderTable
-} from "./chunk-ACJPRXDH.js";
+} from "./chunk-RBTQLCHA.js";
 
 // src/benchmark.ts
 import {
